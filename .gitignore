@@ -1,0 +1,8 @@
+
+/Makefile*
+/LineCounter.pro.user
+/src/Makefile*
+/src/ui_*
+/src/debug/*
+/src/release/*
+/bin/*.exe
