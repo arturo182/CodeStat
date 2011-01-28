@@ -6,3 +6,4 @@
 /src/debug/*
 /src/release/*
 /bin/*.exe
+/bin/data/settings.ini

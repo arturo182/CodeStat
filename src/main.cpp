@@ -1,11 +1,6 @@
-#include <QtGui/QApplication>
-#include "wndMain.h"
+#include "LCApp.h"
 
 int main(int argc, char *argv[])
 {
-  QApplication a(argc, argv);
-  wndMain w;
-      w.show();
-
-  return a.exec();
+  return (new LCApp(argc, argv))->exec();
 }

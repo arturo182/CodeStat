@@ -7,21 +7,38 @@
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
 #include <QtGui/QFileDialog>
 #include <QtGui/QFileIconProvider>
 
 wndMain::wndMain(QWidget *parent): QMainWindow(parent), m_ui(new Ui::wndMain)
 {
+  QSettings set;
+
   m_ui->setupUi(this);
   m_ui->pbProgress->hide();
   m_ui->gbExport->hide();
 
   loadFilters();
   loadExports();
+
+  show();
+
+  restoreGeometry(QByteArray::fromBase64(set.value("geometry", saveGeometry().toBase64()).toByteArray()));
+  restoreState(QByteArray::fromBase64(set.value("state", saveState().toBase64()).toByteArray()));
+  m_ui->splitter->restoreState(QByteArray::fromBase64(set.value("splitter", m_ui->splitter->saveState().toBase64()).toByteArray()));
+  m_ui->twStats->header()->restoreState(QByteArray::fromBase64(set.value("columns", m_ui->twStats->header()->saveState().toBase64()).toByteArray()));
 }
 
 wndMain::~wndMain()
 {
+  QSettings set;
+
+  set.setValue("geometry", saveGeometry().toBase64());
+  set.setValue("state", saveState().toBase64());
+  set.setValue("splitter", m_ui->splitter->saveState().toBase64());
+  set.setValue("columns", m_ui->twStats->header()->saveState().toBase64());
+
   delete m_ui;
 }
 
@@ -48,7 +65,7 @@ void wndMain::loadExports()
   QDir exports(qApp->applicationDirPath() + "/data/exports");
 }
 
-QStringList wndMain::getFileList(const QString &fileDir, const QStringList &filters)
+QStringList wndMain::fileList(const QString &fileDir, const QStringList &filters)
 {
   QStringList files;
 
@@ -60,11 +77,40 @@ QStringList wndMain::getFileList(const QString &fileDir, const QStringList &filt
   if(m_ui->cbDirectoriesSubDirs->isChecked()) {
     QFileInfoList subdirs = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
     foreach(QFileInfo subdir, subdirs) {
-      files.append(getFileList(subdir.absoluteFilePath(), filters));
+      files.append(fileList(subdir.absoluteFilePath(), filters));
     }
   }
 
   return files;
+}
+
+QString wndMain::calcFileSize(qint64 bytes)
+{
+  int KB = 1024;
+  int MB = KB * 1024;
+  int GB = MB * 1024;
+
+  if(bytes >= GB) {
+    if(bytes % GB == 0) {
+      return QString::number(bytes / GB) + " GB";
+    } else {
+      return QString::number(bytes / (float)GB, 'f', 2) + " GB";
+    }
+  } else if(bytes >= MB) {
+    if(bytes % MB == 0) {
+      return QString::number(bytes / MB) + " MB";
+    } else {
+      return QString::number(bytes / (float)MB, 'f', 2) + " MB";
+    }
+  } else if(bytes >= KB) {
+    if(bytes % KB == 0) {
+      return QString::number(bytes / KB) + " KB";
+    } else {
+      return QString::number(bytes / (float)KB, 'f', 2) + " KB";
+    }
+  } else {
+    return QString::number(bytes) + " B";
+  }
 }
 
 void wndMain::on_btnDirectoriesAdd_clicked()
@@ -81,8 +127,12 @@ void wndMain::on_btnStart_clicked()
 {
   QStringList includes;
   QStringList excludes;
+  QList<QRegExp> comments;
 
   m_ui->twStats->clear();
+  m_ui->pbProgress->show();
+  m_ui->pbProgress->setMinimum(0);
+  m_ui->pbProgress->setMaximum(0);
 
   for(int i = 0; i < m_ui->twFilters->topLevelItemCount(); i++) {
     QTreeWidgetItem *item = m_ui->twFilters->topLevelItem(i);
@@ -91,6 +141,7 @@ void wndMain::on_btnStart_clicked()
 
       includes.append(filter.includes());
       excludes.append(filter.excludes());
+      comments.append(filter.comments());
     }
   }
 
@@ -101,19 +152,23 @@ void wndMain::on_btnStart_clicked()
   for(int i = 0; i < m_ui->twDirectories->topLevelItemCount(); i++) {
     QTreeWidgetItem *item = m_ui->twDirectories->topLevelItem(i);
 
-    files.append(getFileList(item->text(0), includes));
+    files.append(fileList(item->text(0), includes));
   }
+
+  files.removeDuplicates();
 
   QFileIconProvider prov;
 
+  m_ui->pbProgress->setMaximum(m_ui->pbProgress->maximum() + files.count() - 1);
   foreach(QString file, files) {
     QFile text(file);
     if(text.open(QIODevice::ReadOnly)) {
       int lineCount = 0;
       int emptyLineCount = 0;
-      //int comment
+      int commentLineCount = 0;
 
       //QString content = text.readAll();
+      //text.reset();
       QTextStream stream(&text);
       QString line;
       while(!stream.atEnd()) {
@@ -123,20 +178,29 @@ void wndMain::on_btnStart_clicked()
         if(line.trimmed().isEmpty()) {
           emptyLineCount++;
         }
+
+        foreach(QRegExp regexp, comments) {
+          if(regexp.exactMatch(line)) {
+            commentLineCount++;
+            break;
+          }
+        }
       }
 
       LCTreeItem *item = new LCTreeItem();
 
       item->setIcon(0, prov.icon(file));
       item->setText(0, file);
-      item->setText(1, QString::number(text.size() / 1024.0));
-      //item->setText(2, );
-      //item->setText(3, );
+      item->setText(1, calcFileSize(text.size()));
+      item->setText(2, QString::number(lineCount - (commentLineCount + emptyLineCount)));
+      item->setText(3, QString::number(commentLineCount));
       item->setText(4, QString::number(emptyLineCount));
       item->setText(5, QString::number(lineCount));
 
       m_ui->twStats->addTopLevelItem(item);
     }
     text.close();
+
+    m_ui->pbProgress->setValue(m_ui->pbProgress->value() + 1);
   }
 }

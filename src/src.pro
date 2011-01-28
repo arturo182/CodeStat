@@ -1,19 +1,23 @@
-QT       += core gui xml
+QT        += core gui xml
 
-TARGET    = LineCounter
-DESTDIR   = ../bin
+TARGET     = LineCounter
+DESTDIR    = ../bin
 
-TEMPLATE  = app
+TEMPLATE   = app
 
-SOURCES  += main.cpp\
-            wndMain.cpp \
-            LCFilter.cpp \
-            LCApp.cpp \
-    LCTreeItem.cpp
+SOURCES   += main.cpp\
+             wndMain.cpp \
+             LCFilter.cpp \
+             LCApp.cpp \
+             LCTreeItem.cpp
 
-HEADERS  += wndMain.h \
-            LCFilter.h \
-            LCApp.h \
-    LCTreeItem.h
+HEADERS   += wndMain.h \
+             LCFilter.h \
+             LCApp.h \
+             LCTreeItem.h
 
-FORMS    += wndMain.ui
+FORMS     += wndMain.ui
+
+RESOURCES += ../res.qrc
+
+RC_FILE    = ../res.rc

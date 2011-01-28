@@ -3,6 +3,8 @@
 
 #include <QtGui/QApplication>
 
+class wndMain;
+
 class LCApp: public QApplication
 {
   Q_OBJECT
@@ -10,10 +12,11 @@ class LCApp: public QApplication
   public:
     LCApp(int &argc, char **argv);
 
-  signals:
+  private slots:
+    void slotAlmostQuit();
 
-  public slots:
-
+  private:
+    wndMain *m_wndMain;
 };
 
 #endif // LCAPP_H

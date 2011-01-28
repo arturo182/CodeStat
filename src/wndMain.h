@@ -21,7 +21,8 @@ class wndMain: public QMainWindow
     void loadFilters();
     void loadExports();
 
-    QStringList getFileList(const QString &fileDir, const QStringList &filters);
+    QStringList fileList(const QString &fileDir, const QStringList &filters);
+    QString calcFileSize(qint64 bytes);
 
   private slots:
     void on_btnDirectoriesAdd_clicked();
