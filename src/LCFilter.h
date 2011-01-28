@@ -8,6 +8,12 @@ class LCFilter
   public:
     LCFilter(QString fileName);
 
+    QString name() { return m_name; }
+    QString fileName() { return m_fileName; }
+    QStringList includes() { return m_includes; }
+    QStringList excludes() { return m_excludes; }
+    QRegExp comments() { return m_comments; }
+
   private:
     QString m_name;
     QString m_fileName;

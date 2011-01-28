@@ -7,6 +7,7 @@
   <excludes>
     <exclude name="ui_*.h" />
     <exclude name="moc_*.cpp" />
+    <exclude name="qrc_*.cpp" />
   </exclude>
   <comments regexp="(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*)" />
 </filter>

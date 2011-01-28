@@ -8,10 +8,12 @@ TEMPLATE  = app
 SOURCES  += main.cpp\
             wndMain.cpp \
             LCFilter.cpp \
-            LCApp.cpp
+            LCApp.cpp \
+    LCTreeItem.cpp
 
 HEADERS  += wndMain.h \
             LCFilter.h \
-            LCApp.h
+            LCApp.h \
+    LCTreeItem.h
 
 FORMS    += wndMain.ui

@@ -21,8 +21,11 @@ class wndMain: public QMainWindow
     void loadFilters();
     void loadExports();
 
-private slots:
+    QStringList getFileList(const QString &fileDir, const QStringList &filters);
+
+  private slots:
     void on_btnDirectoriesAdd_clicked();
+    void on_btnStart_clicked();
 
 private:
     Ui::wndMain *m_ui;

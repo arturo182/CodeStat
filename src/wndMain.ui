@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>644</width>
-    <height>435</height>
+    <height>516</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="layVertical">
         <item>
          <widget class="QGroupBox" name="gbDirectories">
@@ -78,7 +78,7 @@
             </layout>
            </item>
            <item row="2" column="0">
-            <widget class="QCheckBox" name="checkBox">
+            <widget class="QCheckBox" name="cbDirectoriesSubDirs">
              <property name="text">
               <string>Include subdirectories</string>
              </property>
@@ -101,6 +101,11 @@
              <attribute name="headerVisible">
               <bool>false</bool>
              </attribute>
+             <column>
+              <property name="text">
+               <string/>
+              </property>
+             </column>
              <column>
               <property name="text">
                <string/>
@@ -198,7 +203,10 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="btnStart">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -232,6 +240,9 @@
        </layout>
       </widget>
       <widget class="QTreeWidget" name="twStats">
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
        <column>
         <property name="text">
          <string>Filename</string>
