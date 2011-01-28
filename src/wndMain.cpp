@@ -8,6 +8,8 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
+#include <QtCore/QUrl>
+#include <QtGui/QDesktopServices>
 #include <QtGui/QFileDialog>
 #include <QtGui/QFileIconProvider>
 
@@ -65,19 +67,32 @@ void wndMain::loadExports()
   QDir exports(qApp->applicationDirPath() + "/data/exports");
 }
 
-QStringList wndMain::fileList(const QString &fileDir, const QStringList &filters)
+QStringList wndMain::fileList(const QString &fileDir, const QStringList &filters, const QStringList &excludes)
 {
   QStringList files;
 
   QDir dir(fileDir);
   foreach(QString file, dir.entryList(filters, QDir::Files)) {
-    files.append(dir.absolutePath() + "/" + file);
+    bool canAdd = true;
+
+    file.prepend(dir.absolutePath() + "/");
+
+    foreach(QString exclude, excludes) {
+      if(file.contains(QRegExp(exclude, Qt::CaseInsensitive, QRegExp::Wildcard))) {
+        canAdd = false;
+        break;
+      }
+    }
+
+    if(canAdd) {
+      files.append(file);
+    }
   }
 
   if(m_ui->cbDirectoriesSubDirs->isChecked()) {
     QFileInfoList subdirs = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
     foreach(QFileInfo subdir, subdirs) {
-      files.append(fileList(subdir.absoluteFilePath(), filters));
+      files.append(fileList(subdir.absoluteFilePath(), filters, excludes));
     }
   }
 
@@ -117,7 +132,9 @@ void wndMain::on_btnDirectoriesAdd_clicked()
 {
   QString dir = QFileDialog::getExistingDirectory(this, tr("Add directory"));
   if(!dir.isEmpty()) {
-    m_ui->twDirectories->addTopLevelItem(new QTreeWidgetItem(QStringList() << dir));
+    if(m_ui->twDirectories->findItems(dir, Qt::MatchExactly).count() == 0) {
+      m_ui->twDirectories->addTopLevelItem(new QTreeWidgetItem(QStringList() << dir));
+    }
   }
 
   m_ui->btnStart->setEnabled(m_ui->twDirectories->topLevelItemCount() > 0);
@@ -152,7 +169,7 @@ void wndMain::on_btnStart_clicked()
   for(int i = 0; i < m_ui->twDirectories->topLevelItemCount(); i++) {
     QTreeWidgetItem *item = m_ui->twDirectories->topLevelItem(i);
 
-    files.append(fileList(item->text(0), includes));
+    files.append(fileList(item->text(0), includes, excludes));
   }
 
   files.removeDuplicates();
@@ -192,6 +209,7 @@ void wndMain::on_btnStart_clicked()
       item->setIcon(0, prov.icon(file));
       item->setText(0, file);
       item->setText(1, calcFileSize(text.size()));
+      item->setData(1, Qt::UserRole, text.size());
       item->setText(2, QString::number(lineCount - (commentLineCount + emptyLineCount)));
       item->setText(3, QString::number(commentLineCount));
       item->setText(4, QString::number(emptyLineCount));
@@ -202,5 +220,29 @@ void wndMain::on_btnStart_clicked()
     text.close();
 
     m_ui->pbProgress->setValue(m_ui->pbProgress->value() + 1);
+  }
+
+  m_ui->gbExport->show();
+}
+
+void wndMain::on_twDirectories_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+  m_ui->btnDirectoriesRemove->setEnabled(current != 0);
+}
+
+void wndMain::on_btnDirectoriesRemove_clicked()
+{
+  QTreeWidgetItem *item = m_ui->twDirectories->currentItem();
+  if(item) {
+    int index = m_ui->twDirectories->indexOfTopLevelItem(item);
+    m_ui->twDirectories->takeTopLevelItem(index);
+    delete item;
+  }
+}
+
+void wndMain::on_twStats_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+  if(item) {
+    QDesktopServices::openUrl(QUrl("file://" + item->text(0)));
   }
 }

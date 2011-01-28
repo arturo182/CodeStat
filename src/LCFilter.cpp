@@ -27,7 +27,7 @@ LCFilter::LCFilter(QString fileName): m_fileName(fileName)
           }
         }
       } else if(elem.nodeName() == "excludes") {
-        QDomNodeList excludes = elem.elementsByTagName("include");
+        QDomNodeList excludes = elem.elementsByTagName("exclude");
         for(int j = 0; j < excludes.count(); j++) {
           QString exclude = excludes.at(j).toElement().attribute("name");
           if(!exclude.isEmpty()) {

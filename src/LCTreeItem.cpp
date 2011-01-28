@@ -12,6 +12,10 @@ bool LCTreeItem::operator<(const QTreeWidgetItem &other) const
       return text(column).toInt() < other.text(column).toInt();
     break;
 
+    case 1:
+      return data(1, Qt::UserRole).toInt() < other.data(1, Qt::UserRole).toInt();
+    break;
+
     default:
       return text(column) < other.text(column);
     break;
