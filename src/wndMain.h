@@ -26,15 +26,14 @@ class wndMain: public QMainWindow
     QString calcFileSize(qint64 bytes);
 
   private slots:
+    void slotResizeStats(int index, int oldSize, int newSize);
     void on_btnDirectoriesAdd_clicked();
     void on_btnStart_clicked();
     void on_twDirectories_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-
     void on_btnDirectoriesRemove_clicked();
-
     void on_twStats_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
-private:
+  private:
     Ui::wndMain *m_ui;
 
 };

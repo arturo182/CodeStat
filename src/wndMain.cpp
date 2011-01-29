@@ -12,6 +12,7 @@
 #include <QtGui/QDesktopServices>
 #include <QtGui/QFileDialog>
 #include <QtGui/QFileIconProvider>
+#include <QtGui/QScrollBar>
 
 wndMain::wndMain(QWidget *parent): QMainWindow(parent), m_ui(new Ui::wndMain)
 {
@@ -30,6 +31,10 @@ wndMain::wndMain(QWidget *parent): QMainWindow(parent), m_ui(new Ui::wndMain)
   restoreState(QByteArray::fromBase64(set.value("state", saveState().toBase64()).toByteArray()));
   m_ui->splitter->restoreState(QByteArray::fromBase64(set.value("splitter", m_ui->splitter->saveState().toBase64()).toByteArray()));
   m_ui->twStats->header()->restoreState(QByteArray::fromBase64(set.value("columns", m_ui->twStats->header()->saveState().toBase64()).toByteArray()));
+  m_ui->tblStats->horizontalHeader()->restoreState(QByteArray::fromBase64(set.value("columns", m_ui->twStats->header()->saveState().toBase64()).toByteArray()));
+
+  connect(m_ui->twStats->header(), SIGNAL(sectionResized(int,int,int)), this, SLOT(slotResizeStats(int,int,int)));
+  connect(m_ui->twStats->horizontalScrollBar(), SIGNAL(sliderMoved(int)), m_ui->tblStats->horizontalScrollBar(), SLOT(setValue(int)));
 }
 
 wndMain::~wndMain()
@@ -128,13 +133,22 @@ QString wndMain::calcFileSize(qint64 bytes)
   }
 }
 
+void wndMain::slotResizeStats(int index, int oldSize, int newSize)
+{
+  m_ui->tblStats->horizontalHeader()->resizeSection(index, newSize);
+}
+
 void wndMain::on_btnDirectoriesAdd_clicked()
 {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Add directory"));
+  QSettings set;
+
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Add directory"), set.value("lastdir").toString());
   if(!dir.isEmpty()) {
     if(m_ui->twDirectories->findItems(dir, Qt::MatchExactly).count() == 0) {
       m_ui->twDirectories->addTopLevelItem(new QTreeWidgetItem(QStringList() << dir));
     }
+
+    set.setValue("lastdir", dir);
   }
 
   m_ui->btnStart->setEnabled(m_ui->twDirectories->topLevelItemCount() > 0);
@@ -175,6 +189,10 @@ void wndMain::on_btnStart_clicked()
   files.removeDuplicates();
 
   QFileIconProvider prov;
+  int totalFileSize = 0;
+  int totalLineCount = 0;
+  int totalEmptyLineCount = 0;
+  int totalCommentLineCount = 0;
 
   m_ui->pbProgress->setMaximum(m_ui->pbProgress->maximum() + files.count() - 1);
   foreach(QString file, files) {
@@ -204,11 +222,17 @@ void wndMain::on_btnStart_clicked()
         }
       }
 
+      int fileSize = text.size();
+      totalFileSize += fileSize;
+      totalLineCount += lineCount;
+      totalEmptyLineCount += emptyLineCount;
+      totalCommentLineCount += commentLineCount;
+
       LCTreeItem *item = new LCTreeItem();
 
       item->setIcon(0, prov.icon(file));
       item->setText(0, file);
-      item->setText(1, calcFileSize(text.size()));
+      item->setText(1, calcFileSize(fileSize));
       item->setData(1, Qt::UserRole, text.size());
       item->setText(2, QString::number(lineCount - (commentLineCount + emptyLineCount)));
       item->setText(3, QString::number(commentLineCount));
@@ -221,6 +245,15 @@ void wndMain::on_btnStart_clicked()
 
     m_ui->pbProgress->setValue(m_ui->pbProgress->value() + 1);
   }
+
+  int totalSourceLineCount = totalLineCount - (totalCommentLineCount + totalEmptyLineCount);
+
+  m_ui->tblStats->item(0, 0)->setText(QString("%1 %2").arg(files.count()).arg((files.count() == 1)?tr("file"):tr("files")));
+  m_ui->tblStats->item(0, 1)->setText(calcFileSize(totalFileSize));
+  m_ui->tblStats->item(0, 2)->setText(QString("%1 (%2%)").arg(totalSourceLineCount).arg(totalSourceLineCount * 100.0 / totalLineCount, 0, 'g', 2));
+  m_ui->tblStats->item(0, 3)->setText(QString("%1 (%2%)").arg(totalCommentLineCount).arg(totalCommentLineCount * 100.0 / totalLineCount, 0, 'g', 2));
+  m_ui->tblStats->item(0, 4)->setText(QString("%1 (%2%)").arg(totalEmptyLineCount).arg(totalEmptyLineCount * 100.0 / totalLineCount, 0, 'g', 2));
+  m_ui->tblStats->item(0, 5)->setText(QString::number(totalLineCount));
 
   m_ui->gbExport->show();
 }
