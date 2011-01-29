@@ -33,7 +33,9 @@ class wndMain: public QMainWindow
     void on_btnDirectoriesRemove_clicked();
     void on_twStats_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
-  private:
+    void on_btnExportSave_clicked();
+
+private:
     Ui::wndMain *m_ui;
 
 };

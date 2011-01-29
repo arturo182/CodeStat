@@ -4,7 +4,7 @@
 #include <QtGui/QApplication>
 #include <QtXml/QDomDocument>
 
-LCFilter::LCFilter(QString fileName): m_fileName(fileName)
+LCFilter::LCFilter(const QString &fileName): m_fileName(fileName)
 {
   QFile file(qApp->applicationDirPath() + "/data/filters/" + fileName);
   if(file.open(QIODevice::ReadOnly)) {

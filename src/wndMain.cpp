@@ -2,6 +2,7 @@
 #include "ui_wndMain.h"
 
 #include "LCFilter.h"
+#include "LCExport.h"
 #include "LCTreeItem.h"
 
 #include <QtCore/QDir>
@@ -12,6 +13,7 @@
 #include <QtGui/QDesktopServices>
 #include <QtGui/QFileDialog>
 #include <QtGui/QFileIconProvider>
+#include <QtGui/QMessageBox>
 #include <QtGui/QScrollBar>
 
 wndMain::wndMain(QWidget *parent): QMainWindow(parent), m_ui(new Ui::wndMain)
@@ -69,7 +71,14 @@ void wndMain::loadFilters()
 
 void wndMain::loadExports()
 {
+  m_ui->cbExportFormats->clear();
+
   QDir exports(qApp->applicationDirPath() + "/data/exports");
+  foreach(QFileInfo info, exports.entryInfoList(QStringList() << "*xml", QDir::Files, QDir::Name)) {
+    LCExport expo(info.fileName());
+
+    m_ui->cbExportFormats->addItem(expo.name(), expo.fileName());
+  }
 }
 
 QStringList wndMain::fileList(const QString &fileDir, const QStringList &filters, const QStringList &excludes)
@@ -232,8 +241,10 @@ void wndMain::on_btnStart_clicked()
 
       item->setIcon(0, prov.icon(file));
       item->setText(0, file);
+
       item->setText(1, calcFileSize(fileSize));
       item->setData(1, Qt::UserRole, text.size());
+
       item->setText(2, QString::number(lineCount - (commentLineCount + emptyLineCount)));
       item->setText(3, QString::number(commentLineCount));
       item->setText(4, QString::number(emptyLineCount));
@@ -249,10 +260,20 @@ void wndMain::on_btnStart_clicked()
   int totalSourceLineCount = totalLineCount - (totalCommentLineCount + totalEmptyLineCount);
 
   m_ui->tblStats->item(0, 0)->setText(QString("%1 %2").arg(files.count()).arg((files.count() == 1)?tr("file"):tr("files")));
+  m_ui->tblStats->item(0, 0)->setData(Qt::UserRole, files.count());
+
   m_ui->tblStats->item(0, 1)->setText(calcFileSize(totalFileSize));
+  m_ui->tblStats->item(0, 1)->setData(Qt::UserRole, totalFileSize);
+
   m_ui->tblStats->item(0, 2)->setText(QString("%1 (%2%)").arg(totalSourceLineCount).arg(totalSourceLineCount * 100.0 / totalLineCount, 0, 'g', 2));
+  m_ui->tblStats->item(0, 2)->setData(Qt::UserRole, totalSourceLineCount);
+
   m_ui->tblStats->item(0, 3)->setText(QString("%1 (%2%)").arg(totalCommentLineCount).arg(totalCommentLineCount * 100.0 / totalLineCount, 0, 'g', 2));
+  m_ui->tblStats->item(0, 3)->setData(Qt::UserRole, totalCommentLineCount);
+
   m_ui->tblStats->item(0, 4)->setText(QString("%1 (%2%)").arg(totalEmptyLineCount).arg(totalEmptyLineCount * 100.0 / totalLineCount, 0, 'g', 2));
+  m_ui->tblStats->item(0, 4)->setData(Qt::UserRole, totalEmptyLineCount);
+
   m_ui->tblStats->item(0, 5)->setText(QString::number(totalLineCount));
 
   m_ui->gbExport->show();
@@ -277,5 +298,41 @@ void wndMain::on_twStats_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
   if(item) {
     QDesktopServices::openUrl(QUrl("file://" + item->text(0)));
+  }
+}
+
+void wndMain::on_btnExportSave_clicked()
+{
+  if(m_ui->cbExportFormats->currentIndex() > -1) {
+    LCExport expo(m_ui->cbExportFormats->itemData(m_ui->cbExportFormats->currentIndex()).toString());
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export report"), QString(), expo.ext());
+    if(!fileName.isEmpty()) {
+      QStringList totalStats;
+      totalStats.append(m_ui->tblStats->item(0, 0)->data(Qt::UserRole).toString());
+      totalStats.append(m_ui->tblStats->item(0, 1)->data(Qt::UserRole).toString());
+      totalStats.append(m_ui->tblStats->item(0, 1)->text());
+      totalStats.append(m_ui->tblStats->item(0, 2)->data(Qt::UserRole).toString());
+      totalStats.append(m_ui->tblStats->item(0, 3)->data(Qt::UserRole).toString());
+      totalStats.append(m_ui->tblStats->item(0, 4)->data(Qt::UserRole).toString());
+      totalStats.append(m_ui->tblStats->item(0, 5)->text());
+
+
+      QFile file(fileName);
+      if(file.open(QIODevice::WriteOnly)) {
+        QTextStream str(&file);
+        str << expo.prepend(totalStats);
+
+        for(int i = 0; i < m_ui->twStats->topLevelItemCount(); i++) {
+          QTreeWidgetItem *item = m_ui->twStats->topLevelItem(i);
+          str << expo.createItem(item);
+        }
+
+        str << expo.append(totalStats);
+        file.close();
+
+        QMessageBox::information(this, tr("Export completed"), tr("The report has been saved."));
+      }
+    }
   }
 }

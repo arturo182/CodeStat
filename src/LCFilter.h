@@ -6,7 +6,7 @@
 class LCFilter
 {
   public:
-    LCFilter(QString fileName);
+    LCFilter(const QString &fileName);
 
     QString name() { return m_name; }
     QString fileName() { return m_fileName; }

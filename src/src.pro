@@ -9,12 +9,14 @@ SOURCES   += main.cpp\
              wndMain.cpp \
              LCFilter.cpp \
              LCApp.cpp \
-             LCTreeItem.cpp
+             LCTreeItem.cpp \
+    LCExport.cpp
 
 HEADERS   += wndMain.h \
              LCFilter.h \
              LCApp.h \
-             LCTreeItem.h
+             LCTreeItem.h \
+    LCExport.h
 
 FORMS     += wndMain.ui
 
