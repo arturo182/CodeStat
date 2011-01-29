@@ -54,27 +54,28 @@ When the stats are exported to a file first the "prepend" text is inserted, afte
 h3. There are some variables that can be used in export blocks:
 
 For the "item" block:
-==%FILENAME%
-%FILESIZE%
-%FILESIZEB%
-%LINES_SOURCE%
-%LINES_COMMENTS%
-%LINES_EMPTY%
-%LINES_TOTAL%
-%PERCENT_SOURCE%
-%PERCENT_COMMENTS%
-%PERCENT_EMPTY%==
+* ==%FILENAME%==
+* ==%FILESIZE%==
+* ==%FILESIZEB%==
+* ==%LINES_SOURCE%==
+* ==%LINES_COMMENTS%==
+* ==%LINES_EMPTY%==
+* ==%LINES_TOTAL%==
+* ==%PERCENT_SOURCE%==
+* ==%PERCENT_COMMENTS%==
+* ==%PERCENT_EMPTY%==
 
 For "prepend" and "append" blocks:
-=="%TOTAL_FILECOUNT%
-%TOTAL_FILESIZE%
-%TOTAL_FILESIZEB%
-%TOTAL_LINES_SOURCE%
-%TOTAL_LINES_COMMENTS%
-%TOTAL_LINES_EMPTY%
-%TOTAL_LINES%
-%TOTAL_PERCENT_SOURCE%
-%TOTAL_PERCENT_COMMENTS%
-%TOTAL_PERCENT_EMPTY%
-%CURRENT_DATE%
-%CURRENT_TIME%==
+
+* ==%TOTAL_FILECOUNT%==
+* ==%TOTAL_FILESIZE%==
+* ==%TOTAL_FILESIZEB%==
+* ==%TOTAL_LINES_SOURCE%==
+* ==%TOTAL_LINES_COMMENTS%==
+* ==%TOTAL_LINES_EMPTY%==
+* ==%TOTAL_LINES%==
+* ==%TOTAL_PERCENT_SOURCE%==
+* ==%TOTAL_PERCENT_COMMENTS%==
+* ==%TOTAL_PERCENT_EMPTY%==
+* ==%CURRENT_DATE%==
+* ==%CURRENT_TIME%==
