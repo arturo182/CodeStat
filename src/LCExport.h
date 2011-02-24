@@ -2,6 +2,7 @@
 #define LCEXPORT_H
 
 #include <QtCore/QString>
+#include <QtGui/QFont>
 
 class QTreeWidgetItem;
 
@@ -14,9 +15,9 @@ class LCExport
     QString prepend(const QStringList &totalStats);
     QString append(const QStringList &totalStats);
 
-    QString name() { return m_name; }
-    QString ext() { return m_ext; }
-    QString fileName() { return m_fileName; }
+    QString name() const { return m_name; }
+    QString ext() const { return m_ext; }
+    QString fileName() const { return m_fileName; }
 
   private:
     QString createCode(const QString &templ, const QStringList &totalStats);

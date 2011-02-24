@@ -8,11 +8,11 @@ class LCFilter
   public:
     LCFilter(const QString &fileName);
 
-    QString name() { return m_name; }
-    QString fileName() { return m_fileName; }
-    QStringList includes() { return m_includes; }
-    QStringList excludes() { return m_excludes; }
-    QRegExp comments() { return m_comments; }
+    QString name() const { return m_name; }
+    QString fileName() const { return m_fileName; }
+    QStringList includes() const { return m_includes; }
+    QStringList excludes() const { return m_excludes; }
+    QRegExp comments() const { return m_comments; }
 
   private:
     QString m_name;

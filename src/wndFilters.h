@@ -16,15 +16,15 @@ class wndFilters: public QDialog
     explicit wndFilters(QWidget *parent = 0);
     ~wndFilters();
 
-    void setFileName(QString fileName) { m_fileName = fileName; }
+    void setFileName(const QString &fileName) { m_fileName = fileName; }
 
   protected:
     void showEvent(QShowEvent *event);
 
-private slots:
+  private slots:
     void on_btnOK_clicked();
 
-private:
+  private:
     Ui::wndFilters *m_ui;
     QString m_fileName;
 };
