@@ -6,6 +6,8 @@
 class QLabel;
 class QTreeWidgetItem;
 
+class wndFilters;
+
 namespace Ui
 {
   class wndMain;
@@ -32,12 +34,17 @@ class wndMain: public QMainWindow
     void on_twDirectories_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_btnDirectoriesRemove_clicked();
     void on_twStats_itemDoubleClicked(QTreeWidgetItem *item, int column);
-
     void on_btnExportSave_clicked();
+    void on_btnFiltersNew_clicked();
+    void on_twFilters_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+
+    void on_btnFiltersEdit_clicked();
+
+    void on_twFilters_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
 private:
     Ui::wndMain *m_ui;
-
+    wndFilters *m_wndFilters;
 };
 
 #endif // WNDMAIN_H

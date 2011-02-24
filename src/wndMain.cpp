@@ -4,6 +4,7 @@
 #include "LCFilter.h"
 #include "LCExport.h"
 #include "LCTreeItem.h"
+#include "wndFilters.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
@@ -13,6 +14,7 @@
 #include <QtGui/QDesktopServices>
 #include <QtGui/QFileDialog>
 #include <QtGui/QFileIconProvider>
+#include <QtGui/QInputDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QScrollBar>
 
@@ -29,25 +31,28 @@ wndMain::wndMain(QWidget *parent): QMainWindow(parent), m_ui(new Ui::wndMain)
 
   show();
 
-  restoreGeometry(QByteArray::fromBase64(set.value("geometry", saveGeometry().toBase64()).toByteArray()));
-  restoreState(QByteArray::fromBase64(set.value("state", saveState().toBase64()).toByteArray()));
-  m_ui->splitter->restoreState(QByteArray::fromBase64(set.value("splitter", m_ui->splitter->saveState().toBase64()).toByteArray()));
-  m_ui->twStats->header()->restoreState(QByteArray::fromBase64(set.value("columns", m_ui->twStats->header()->saveState().toBase64()).toByteArray()));
-  m_ui->tblStats->horizontalHeader()->restoreState(QByteArray::fromBase64(set.value("columns", m_ui->twStats->header()->saveState().toBase64()).toByteArray()));
+  restoreGeometry(set.value("geometry", saveGeometry()).toByteArray());
+  restoreState(set.value("state", saveState()).toByteArray());
+  m_ui->splitter->restoreState(set.value("splitter", m_ui->splitter->saveState()).toByteArray());
+  m_ui->twStats->header()->restoreState(set.value("columns", m_ui->twStats->header()->saveState()).toByteArray());
+  m_ui->tblStats->horizontalHeader()->restoreState(set.value("columns", m_ui->twStats->header()->saveState()).toByteArray());
 
   connect(m_ui->twStats->header(), SIGNAL(sectionResized(int,int,int)), this, SLOT(slotResizeStats(int,int,int)));
   connect(m_ui->twStats->horizontalScrollBar(), SIGNAL(sliderMoved(int)), m_ui->tblStats->horizontalScrollBar(), SLOT(setValue(int)));
+
+  m_wndFilters = new wndFilters(this);
 }
 
 wndMain::~wndMain()
 {
   QSettings set;
 
-  set.setValue("geometry", saveGeometry().toBase64());
-  set.setValue("state", saveState().toBase64());
-  set.setValue("splitter", m_ui->splitter->saveState().toBase64());
-  set.setValue("columns", m_ui->twStats->header()->saveState().toBase64());
+  set.setValue("geometry", saveGeometry());
+  set.setValue("state", saveState());
+  set.setValue("splitter", m_ui->splitter->saveState());
+  set.setValue("columns", m_ui->twStats->header()->saveState());
 
+  delete m_wndFilters;
   delete m_ui;
 }
 
@@ -334,5 +339,35 @@ void wndMain::on_btnExportSave_clicked()
         QMessageBox::information(this, tr("Export completed"), tr("The report has been saved."));
       }
     }
+  }
+}
+
+void wndMain::on_btnFiltersNew_clicked()
+{
+  QString fileName = QInputDialog::getText(this, tr("Filter's file name"), tr("Please input file name for the new filter:"));
+  if(!fileName.isEmpty()) {
+    m_wndFilters->setFileName(fileName);
+    m_wndFilters->show();
+  }
+}
+
+void wndMain::on_twFilters_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+  m_ui->btnFiltersEdit->setEnabled(current != 0);
+  m_ui->btnFiltersDelete->setEnabled(current != 0);
+}
+
+void wndMain::on_btnFiltersEdit_clicked()
+{
+  if(m_ui->twFilters->currentItem()) {
+    m_wndFilters->setFileName(m_ui->twFilters->currentItem()->text(1));
+    m_wndFilters->show();
+  }
+}
+
+void wndMain::on_twFilters_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+  if(item) {
+    on_btnFiltersEdit_clicked();
   }
 }

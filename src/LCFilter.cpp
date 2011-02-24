@@ -1,5 +1,6 @@
 #include "LCFilter.h"
 
+#include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtGui/QApplication>
 #include <QtXml/QDomDocument>
@@ -34,7 +35,7 @@ LCFilter::LCFilter(const QString &fileName): m_fileName(fileName)
             m_excludes.append(exclude);
           }
         }
-      } else if(elem.nodeName() == "comment") {
+      } else if(elem.nodeName() == "comments") {
         m_comments = QRegExp(elem.attribute("regexp"));
       }
     }
