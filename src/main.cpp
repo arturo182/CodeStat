@@ -1,6 +1,13 @@
-#include "LCApp.h"
+#include <QApplication>
+
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
-  return (new LCApp(argc, argv))->exec();
+	QApplication app(argc, argv);
+
+	MainWindow wnd;
+	wnd.show();
+
+	return app.exec();
 }

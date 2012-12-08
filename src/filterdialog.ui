@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>wndFilters</class>
- <widget class="QDialog" name="wndFilters">
+ <class>FilterDialog</class>
+ <widget class="QDialog" name="FilterDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -24,27 +24,27 @@
     <number>6</number>
    </property>
    <item row="0" column="0">
-    <widget class="QLabel" name="lbName">
+    <widget class="QLabel" name="nameLabel">
      <property name="text">
       <string>Name:</string>
      </property>
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLineEdit" name="edName"/>
+    <widget class="QLineEdit" name="nameEdit"/>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="lbComments">
+    <widget class="QLabel" name="commentsLabel">
      <property name="text">
       <string>Comment regex:</string>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLineEdit" name="edComments"/>
+    <widget class="QLineEdit" name="commentsEdit"/>
    </item>
    <item row="2" column="0" colspan="2">
-    <widget class="QGroupBox" name="gbFiles">
+    <widget class="QGroupBox" name="filesGroupBox">
      <property name="title">
       <string>Files</string>
      </property>
@@ -62,7 +62,7 @@
        <number>6</number>
       </property>
       <item row="1" column="0">
-       <widget class="QTreeWidget" name="twFilesInclude">
+       <widget class="QTreeWidget" name="includeTree">
         <property name="indentation">
          <number>0</number>
         </property>
@@ -77,7 +77,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QTreeWidget" name="twFilesExclude">
+       <widget class="QTreeWidget" name="excludeTree">
         <property name="indentation">
          <number>0</number>
         </property>
@@ -92,23 +92,23 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="lbFilesInclude">
+       <widget class="QLabel" name="filesIncludeLabel">
         <property name="text">
          <string>Include:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="lbFilesExclude">
+       <widget class="QLabel" name="filesExcludeLabel">
         <property name="text">
          <string>Exclude:</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <layout class="QHBoxLayout" name="layHorizontal_3">
+       <layout class="QHBoxLayout" name="excludeHBoxLayout">
         <item>
-         <spacer name="spHorizontal_3">
+         <spacer name="excludeSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -121,14 +121,14 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="btnFilesExcludeAdd">
+         <widget class="QPushButton" name="addExcludeButton">
           <property name="text">
            <string>Add</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnFilesExcludeRemove">
+         <widget class="QPushButton" name="removeExcludeButton">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -140,9 +140,9 @@
        </layout>
       </item>
       <item row="2" column="0">
-       <layout class="QHBoxLayout" name="layHorizontal_2">
+       <layout class="QHBoxLayout" name="includeHBoxLayoud">
         <item>
-         <spacer name="spHorizontal_2">
+         <spacer name="includeSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -155,14 +155,14 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="btnFilesIncludeAdd">
+         <widget class="QPushButton" name="addIncludeButton">
           <property name="text">
            <string>Add</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnFilesIncludeRemove">
+         <widget class="QPushButton" name="removeIncludeButton">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -177,9 +177,9 @@
     </widget>
    </item>
    <item row="3" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="layHorizontal">
+    <layout class="QHBoxLayout" name="buttonsHBoxLayout">
      <item>
-      <spacer name="spHorizontal">
+      <spacer name="buttonsSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -192,14 +192,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btnOK">
+      <widget class="QPushButton" name="okButton">
        <property name="text">
         <string>OK</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btnCancel">
+      <widget class="QPushButton" name="cancelButton">
        <property name="text">
         <string>Cancel</string>
        </property>
@@ -210,23 +210,23 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>edName</tabstop>
-  <tabstop>edComments</tabstop>
-  <tabstop>twFilesInclude</tabstop>
-  <tabstop>twFilesExclude</tabstop>
-  <tabstop>btnFilesIncludeAdd</tabstop>
-  <tabstop>btnFilesIncludeRemove</tabstop>
-  <tabstop>btnFilesExcludeAdd</tabstop>
-  <tabstop>btnFilesExcludeRemove</tabstop>
-  <tabstop>btnOK</tabstop>
-  <tabstop>btnCancel</tabstop>
+  <tabstop>nameEdit</tabstop>
+  <tabstop>commentsEdit</tabstop>
+  <tabstop>includeTree</tabstop>
+  <tabstop>excludeTree</tabstop>
+  <tabstop>addIncludeButton</tabstop>
+  <tabstop>removeIncludeButton</tabstop>
+  <tabstop>addExcludeButton</tabstop>
+  <tabstop>removeExcludeButton</tabstop>
+  <tabstop>okButton</tabstop>
+  <tabstop>cancelButton</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>btnCancel</sender>
+   <sender>cancelButton</sender>
    <signal>clicked()</signal>
-   <receiver>wndFilters</receiver>
+   <receiver>FilterDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -236,6 +236,22 @@
     <hint type="destinationlabel">
      <x>145</x>
      <y>227</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okButton</sender>
+   <signal>clicked()</signal>
+   <receiver>FilterDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>244</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>110</x>
+     <y>266</y>
     </hint>
    </hints>
   </connection>

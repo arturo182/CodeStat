@@ -1,4 +1,4 @@
-QT        += core gui xml
+QT        += core gui widgets xml
 
 TARGET     = LineCounter
 DESTDIR    = ../bin
@@ -6,22 +6,21 @@ DESTDIR    = ../bin
 TEMPLATE   = app
 
 SOURCES   += main.cpp\
-             wndMain.cpp \
-             wndFilters.cpp \
-             LCFilter.cpp \
-             LCApp.cpp \
-             LCTreeItem.cpp \
-             LCExport.cpp
+    filter.cpp \
+    filterdialog.cpp \
+    export.cpp \
+    mainwindow.cpp
 
-HEADERS   += wndMain.h \
-             wndFilters.h \
-             LCFilter.h \
-             LCApp.h \
-             LCTreeItem.h \
-             LCExport.h
+HEADERS   += \
+    filter.h \
+    treeitem.h \
+    filterdialog.h \
+    export.h \
+    mainwindow.h
 
-FORMS     += wndMain.ui \
-             wndFilters.ui
+FORMS     += \
+    mainwindow.ui \
+    filterdialog.ui
 
 RESOURCES += ../res.qrc
 
