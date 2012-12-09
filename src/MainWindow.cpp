@@ -14,6 +14,7 @@
 #include <QScrollBar>
 #include <QFileInfo>
 #include <QSettings>
+#include <qmath.h>
 #include <QDebug>
 #include <QDir>
 #include <QUrl>
@@ -31,10 +32,10 @@ MainWindow::MainWindow(QWidget *parent):
 	loadFilters();
 	loadExports();
 
-	restoreGeometry(set.value("geometry", saveGeometry()).toByteArray());
-	restoreState(set.value("state", saveState()).toByteArray());
-	m_ui->statsTree->header()->restoreState(set.value("columns", m_ui->statsTree->header()->saveState()).toByteArray());
-	m_ui->statsTable->horizontalHeader()->restoreState(set.value("columns", m_ui->statsTree->header()->saveState()).toByteArray());
+	restoreGeometry(set.value("geometry").toByteArray());
+	restoreState(set.value("state").toByteArray());
+	m_ui->statsTree->header()->restoreState(set.value("columns").toByteArray());
+	m_ui->statsTable->horizontalHeader()->restoreState(set.value("columns").toByteArray());
 
 	connect(m_ui->statsTree->header(), &QHeaderView::sectionResized, this, &MainWindow::slotResizeStats);
 	connect(m_ui->statsTree->horizontalScrollBar(), &QScrollBar::sliderMoved, m_ui->statsTable->horizontalScrollBar(), &QScrollBar::setValue);
@@ -111,31 +112,13 @@ QStringList MainWindow::fileList(const QString &fileDir, const QStringList &filt
 
 QString MainWindow::calcFileSize(const qint64 &bytes)
 {
-	int KB = 1024;
-	int MB = KB * 1024;
-	int GB = MB * 1024;
+	if(bytes == 0)
+		return "0 B";
 
-	if(bytes >= GB) {
-		if(bytes % GB == 0) {
-			return QString::number(bytes / GB) + " GB";
-		} else {
-			return QString::number(bytes / (float)GB, 'f', 2) + " GB";
-		}
-	} else if(bytes >= MB) {
-		if(bytes % MB == 0) {
-			return QString::number(bytes / MB) + " MB";
-		} else {
-			return QString::number(bytes / (float)MB, 'f', 2) + " MB";
-		}
-	} else if(bytes >= KB) {
-		if(bytes % KB == 0) {
-			return QString::number(bytes / KB) + " KB";
-		} else {
-			return QString::number(bytes / (float)KB, 'f', 2) + " KB";
-		}
-	} else {
-		return QString::number(bytes) + " B";
-	}
+	const QStringList units = QStringList() << "B" << "KB" << "MB" << "GB" << "TB";
+	const int digitGroups = log10(bytes) / log10(1024);
+
+	return QString::number(bytes / qPow(1024.0, digitGroups), 'f', 2) + " " + units[digitGroups];
 }
 
 void MainWindow::slotResizeStats(const int &index, const int &oldSize, const int &newSize)
@@ -331,6 +314,8 @@ void MainWindow::on_newFilterButton_clicked()
 {
 	FilterDialog dlg(this);
 	dlg.exec();
+
+	//TODO reload filters
 }
 
 void MainWindow::on_filtersTree_currentItemChanged(QTreeWidgetItem *item)
@@ -346,6 +331,8 @@ void MainWindow::on_editFilterButton_clicked()
 
 	FilterDialog dlg(this, m_ui->filtersTree->currentItem()->text(1));
 	dlg.exec();
+
+	//TODO reload filters
 }
 
 void MainWindow::on_filtersTree_itemDoubleClicked(QTreeWidgetItem *item)

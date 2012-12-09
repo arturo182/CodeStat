@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>677</width>
-    <height>510</height>
+    <width>920</width>
+    <height>512</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -271,6 +271,9 @@
       </property>
       <item>
        <widget class="QTreeWidget" name="statsTree">
+        <property name="indentation">
+         <number>0</number>
+        </property>
         <property name="sortingEnabled">
          <bool>true</bool>
         </property>
@@ -289,12 +292,12 @@
         </column>
         <column>
          <property name="text">
-          <string>Source</string>
+          <string>Source lines</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Comments</string>
+          <string>Comment lines</string>
          </property>
         </column>
         <column>
@@ -304,7 +307,7 @@
         </column>
         <column>
          <property name="text">
-          <string>Total</string>
+          <string>Total lines</string>
          </property>
         </column>
        </widget>
