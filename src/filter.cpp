@@ -1,7 +1,6 @@
 #include "filter.h"
 
 #include <QJsonDocument>
-#include <QApplication>
 #include <QJsonObject>
 #include <QDebug>
 #include <QFile>
