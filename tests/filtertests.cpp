@@ -7,7 +7,7 @@ const QString testName = "fooBar";
 const QString testComments = ".*";
 const QStringList testIncludes = { "*.foo", "*.bar" };
 const QStringList testExcludes = { "*.~foo" };
-const QString testFileName = "sample.js";
+const QString testFileName = "sample.json";
 
 class FilterTests : public QObject
 {
