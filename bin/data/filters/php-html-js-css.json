@@ -1,6 +1,12 @@
 {
-	"name": "PHP projects (PHP, HTML, JS, CSS)",
-	"includes": ["*.php*", "*.htm*", "*.js", "*.css"],
-	"excludes": [],
-	"comments": "(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*)"
+    "comments": "(/*([^*]|[\r\n]|(*+([^*/]|[\r\n])))**+/)|(//.*)",
+    "excludes": [
+    ],
+    "includes": [
+        "*.php*",
+        "*.htm*",
+        "*.js",
+        "*.css"
+    ],
+    "name": "PHP projects (PHP, HTML, JS, CSS)"
 }

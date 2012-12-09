@@ -1,4 +1,4 @@
-QT        += core gui widgets xml
+QT        += core gui widgets
 
 TARGET     = LineCounter
 DESTDIR    = ../bin

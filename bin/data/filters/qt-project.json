@@ -1,6 +1,13 @@
 {
-	"name": "Qt Projects",
-	"includes": ["*.h", "*.cpp"],
-	"excludes": ["ui_*.h", "moc_*.cpp", "qrc_*.cpp"],
-	"comments": "(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*)"
+    "comments": "(/*([^*]|[\r\n]|(*+([^*/]|[\r\n])))**+/)|(//.*)",
+    "excludes": [
+        "ui_*.h",
+        "moc_*.cpp",
+        "qrc_*.cpp"
+    ],
+    "includes": [
+        "*.h",
+        "*.cpp"
+    ],
+    "name": "Qt Projects"
 }

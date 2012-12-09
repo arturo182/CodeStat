@@ -20,8 +20,7 @@
 
 MainWindow::MainWindow(QWidget *parent):
 	QMainWindow(parent),
-	m_ui(new Ui::MainWindow),
-	m_wndFilters(new FilterDialog(this))
+	m_ui(new Ui::MainWindow)
 {
 	QSettings set;
 
@@ -48,7 +47,6 @@ MainWindow::~MainWindow()
 	set.setValue("state", saveState());
 	set.setValue("columns", m_ui->statsTree->header()->saveState());
 
-	delete m_wndFilters;
 	delete m_ui;
 }
 
@@ -58,12 +56,12 @@ void MainWindow::loadFilters()
 
 	QDir filters(qApp->applicationDirPath() + "/data/filters");
 	foreach(const QFileInfo &info, filters.entryInfoList(QStringList() << "*.json", QDir::Files, QDir::Name)) {
-		const Filter filter(info.fileName());
+		const Filter filter(info.absoluteFilePath());
 
 		QTreeWidgetItem *item = new QTreeWidgetItem();
 		item->setCheckState(0, Qt::Unchecked);
 		item->setText(0, filter.name());
-		item->setText(1, info.fileName());
+		item->setText(1, info.absoluteFilePath());
 
 		m_ui->filtersTree->addTopLevelItem(item);
 	}
@@ -295,7 +293,8 @@ void MainWindow::on_statsTree_itemDoubleClicked(QTreeWidgetItem *item)
 void MainWindow::on_exportSaveButton_clicked()
 {
 	if(m_ui->exportFormatCombo->currentIndex() > -1) {
-		Export expo(m_ui->exportFormatCombo->itemData(m_ui->exportFormatCombo->currentIndex()).toString());
+		const int currentIndex = m_ui->exportFormatCombo->currentIndex();
+		Export expo(m_ui->exportFormatCombo->itemData(currentIndex).toString());
 
 		QString fileName = QFileDialog::getSaveFileName(this, tr("Export report"), QString(), expo.ext());
 		if(!fileName.isEmpty()) {
@@ -330,11 +329,8 @@ void MainWindow::on_exportSaveButton_clicked()
 
 void MainWindow::on_newFilterButton_clicked()
 {
-	QString fileName = QInputDialog::getText(this, tr("Filter's file name"), tr("Please input file name for the new filter:"));
-	if(!fileName.isEmpty()) {
-		m_wndFilters->setFileName(fileName);
-		m_wndFilters->show();
-	}
+	FilterDialog dlg(this);
+	dlg.exec();
 }
 
 void MainWindow::on_filtersTree_currentItemChanged(QTreeWidgetItem *item)
@@ -345,10 +341,11 @@ void MainWindow::on_filtersTree_currentItemChanged(QTreeWidgetItem *item)
 
 void MainWindow::on_editFilterButton_clicked()
 {
-	if(m_ui->filtersTree->currentItem()) {
-		m_wndFilters->setFileName(m_ui->filtersTree->currentItem()->text(1));
-		m_wndFilters->show();
-	}
+	if(!m_ui->filtersTree->currentItem())
+		return;
+
+	FilterDialog dlg(this, m_ui->filtersTree->currentItem()->text(1));
+	dlg.exec();
 }
 
 void MainWindow::on_filtersTree_itemDoubleClicked(QTreeWidgetItem *item)

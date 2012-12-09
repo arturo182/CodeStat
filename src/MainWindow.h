@@ -3,10 +3,7 @@
 
 #include <QMainWindow>
 
-class QLabel;
 class QTreeWidgetItem;
-
-class FilterDialog;
 
 namespace Ui
 {
@@ -42,7 +39,6 @@ class MainWindow: public QMainWindow
 
 	private:
 		Ui::MainWindow *m_ui;
-		FilterDialog *m_wndFilters;
 };
 
 #endif // WNDMAIN_H

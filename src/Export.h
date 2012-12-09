@@ -23,12 +23,12 @@ class Export
 		QString createCode(const QString &templ, const QStringList &totalStats);
 
 	private:
-		QString m_name;
-		QString m_ext;
 		QString m_fileName;
 		QString m_prepend;
-		QString m_item;
 		QString m_append;
+		QString m_name;
+		QString m_item;
+		QString m_ext;
 };
 
 #endif // EXPORT_H

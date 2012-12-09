@@ -9,13 +9,12 @@
 #include <QFile>
 #include <QTime>
 
-Export::Export(const QString &fileName):
+Export::Export(const QString &fileName) :
 	m_fileName(fileName)
 {
 	QFile file(qApp->applicationDirPath() + "/data/exports/" + fileName);
 	if(file.open(QIODevice::ReadOnly)) {
-		QJsonParseError error;
-		QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &error);
+		QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
 		file.close();
 
 		const QJsonObject rootObj = doc.object();
