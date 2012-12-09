@@ -101,4 +101,4 @@ void FilterTests::excludesTest()
 
 QTEST_APPLESS_MAIN(FilterTests)
 
-#include "tst_filtertests.moc"
+#include "filtertests.moc"
