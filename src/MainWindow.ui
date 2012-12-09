@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>LineCounter</string>
+   <string>CodeStat</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../res.qrc">
