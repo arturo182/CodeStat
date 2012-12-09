@@ -50,7 +50,11 @@ void FilterDialog::done(int result)
 	}
 
 	if(m_fileName.isEmpty()) {
-		m_fileName = QFileDialog::getSaveFileName(this, tr("Select file name"), "", "Json (*.json)");
+		m_fileName = QFileDialog::getSaveFileName(this, tr("Select file name"), qApp->applicationDirPath() + "/filters", "Json (*.json)");
+		if(m_fileName.isEmpty()) {
+			QDialog::done(QDialog::Rejected);
+			return;
+		}
 	}
 
 	Filter filter(m_fileName);

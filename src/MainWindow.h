@@ -18,24 +18,32 @@ class MainWindow: public QMainWindow
 		MainWindow(QWidget *parent = 0);
 		~MainWindow();
 
-		void loadFilters();
+		void reloadFilters();
 		void loadExports();
 
 		QStringList fileList(const QString &fileDir, const QStringList &filters, const QStringList &excludes);
 		QString calcFileSize(const qint64 &bytes);
 
+	protected:
+		void closeEvent(QCloseEvent *event);
+
 	private slots:
-		void slotResizeStats(const int &index, const int &oldSize, const int &newSize);
-		void on_addDirButton_clicked();
-		void on_startButton_clicked();
-		void on_dirsTree_currentItemChanged(QTreeWidgetItem *current);
-		void on_removeDirButton_clicked();
-		void on_statsTree_itemDoubleClicked(QTreeWidgetItem *item);
-		void on_exportSaveButton_clicked();
-		void on_newFilterButton_clicked();
-		void on_filtersTree_currentItemChanged(QTreeWidgetItem *item);
-		void on_editFilterButton_clicked();
+		void resizeStats(const int &index, const int &oldSize, const int &newSize);
+		void updateDirButtons(QTreeWidgetItem *current);
+		void openFile(QTreeWidgetItem *item);
+		void updateFiltersButtons(QTreeWidgetItem *item);
 		void on_filtersTree_itemDoubleClicked(QTreeWidgetItem *item);
+		void addDir();
+		void removeDir();
+		void start();
+		void saveExport();
+		void newFilter();
+		void editFilter();
+		void deleteFilter();
+
+	private:
+		void readSettings();
+		void writeSettings();
 
 	private:
 		Ui::MainWindow *m_ui;

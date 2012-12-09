@@ -23,44 +23,42 @@ MainWindow::MainWindow(QWidget *parent):
 	QMainWindow(parent),
 	m_ui(new Ui::MainWindow)
 {
-	QSettings set;
-
 	m_ui->setupUi(this);
 	m_ui->progressBar->hide();
 	m_ui->exportGroupBox->hide();
 
-	loadFilters();
+	readSettings();
+
+	reloadFilters();
 	loadExports();
 
-	restoreGeometry(set.value("geometry").toByteArray());
-	restoreState(set.value("state").toByteArray());
-	m_ui->statsTree->header()->restoreState(set.value("columns").toByteArray());
-	m_ui->statsTable->horizontalHeader()->restoreState(set.value("columns").toByteArray());
-
-	connect(m_ui->statsTree->header(), &QHeaderView::sectionResized, this, &MainWindow::slotResizeStats);
+	connect(m_ui->statsTree->header(), &QHeaderView::sectionResized, this, &MainWindow::resizeStats);
 	connect(m_ui->statsTree->horizontalScrollBar(), &QScrollBar::sliderMoved, m_ui->statsTable->horizontalScrollBar(), &QScrollBar::setValue);
 }
 
 MainWindow::~MainWindow()
 {
-	QSettings set;
-	set.setValue("geometry", saveGeometry());
-	set.setValue("state", saveState());
-	set.setValue("columns", m_ui->statsTree->header()->saveState());
-
 	delete m_ui;
 }
 
-void MainWindow::loadFilters()
+void MainWindow::reloadFilters()
 {
+	QStringList selectedFilters;
+	for(int i = 0; i < m_ui->filtersTree->topLevelItemCount(); ++i) {
+		QTreeWidgetItem *item = m_ui->filtersTree->topLevelItem(i);
+		if(item->checkState(0) == Qt::Checked)
+			selectedFilters << item->text(1);
+	}
+
+
 	m_ui->filtersTree->clear();
 
-	QDir filters(qApp->applicationDirPath() + "/data/filters");
+	QDir filters(qApp->applicationDirPath() + "/filters");
 	foreach(const QFileInfo &info, filters.entryInfoList(QStringList() << "*.json", QDir::Files, QDir::Name)) {
 		const Filter filter(info.absoluteFilePath());
 
 		QTreeWidgetItem *item = new QTreeWidgetItem();
-		item->setCheckState(0, Qt::Unchecked);
+		item->setCheckState(0, selectedFilters.contains(info.absoluteFilePath()) ? Qt::Checked : Qt::Unchecked);
 		item->setText(0, filter.name());
 		item->setText(1, info.absoluteFilePath());
 
@@ -72,7 +70,7 @@ void MainWindow::loadExports()
 {
 	m_ui->exportFormatCombo->clear();
 
-	QDir exports(qApp->applicationDirPath() + "/data/exports");
+	QDir exports(qApp->applicationDirPath() + "/exports");
 	foreach(const QFileInfo &info, exports.entryInfoList(QStringList() << "*.json", QDir::Files, QDir::Name)) {
 		Export expo(info.fileName());
 
@@ -121,12 +119,17 @@ QString MainWindow::calcFileSize(const qint64 &bytes)
 	return QString::number(bytes / qPow(1024.0, digitGroups), 'f', 2) + " " + units[digitGroups];
 }
 
-void MainWindow::slotResizeStats(const int &index, const int &oldSize, const int &newSize)
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	writeSettings();
+}
+
+void MainWindow::resizeStats(const int &index, const int &oldSize, const int &newSize)
 {
 	m_ui->statsTable->horizontalHeader()->resizeSection(index, newSize);
 }
 
-void MainWindow::on_addDirButton_clicked()
+void MainWindow::addDir()
 {
 	QSettings set;
 
@@ -143,7 +146,7 @@ void MainWindow::on_addDirButton_clicked()
 	m_ui->startButton->setEnabled(m_ui->dirsTree->topLevelItemCount() > 0);
 }
 
-void MainWindow::on_startButton_clicked()
+void MainWindow::start()
 {
 	QStringList includes;
 	QStringList excludes;
@@ -255,17 +258,17 @@ void MainWindow::on_startButton_clicked()
 	m_ui->exportGroupBox->show();
 }
 
-void MainWindow::on_dirsTree_currentItemChanged(QTreeWidgetItem *current)
+void MainWindow::updateDirButtons(QTreeWidgetItem *current)
 {
 	m_ui->removeDirButton->setEnabled(current != 0);
 }
 
-void MainWindow::on_removeDirButton_clicked()
+void MainWindow::removeDir()
 {
 	delete m_ui->dirsTree->currentItem();
 }
 
-void MainWindow::on_statsTree_itemDoubleClicked(QTreeWidgetItem *item)
+void MainWindow::openFile(QTreeWidgetItem *item)
 {
 	if(!item)
 		return;
@@ -273,7 +276,7 @@ void MainWindow::on_statsTree_itemDoubleClicked(QTreeWidgetItem *item)
 	QDesktopServices::openUrl(QUrl("file:///" + item->text(0)));
 }
 
-void MainWindow::on_exportSaveButton_clicked()
+void MainWindow::saveExport()
 {
 	if(m_ui->exportFormatCombo->currentIndex() > -1) {
 		const int currentIndex = m_ui->exportFormatCombo->currentIndex();
@@ -310,29 +313,27 @@ void MainWindow::on_exportSaveButton_clicked()
 	}
 }
 
-void MainWindow::on_newFilterButton_clicked()
+void MainWindow::newFilter()
 {
 	FilterDialog dlg(this);
-	dlg.exec();
-
-	//TODO reload filters
+	if(dlg.exec())
+		reloadFilters();
 }
 
-void MainWindow::on_filtersTree_currentItemChanged(QTreeWidgetItem *item)
+void MainWindow::updateFiltersButtons(QTreeWidgetItem *item)
 {
 	m_ui->editFilterButton->setEnabled(item != 0);
 	m_ui->deleteFilterButton->setEnabled(item != 0);
 }
 
-void MainWindow::on_editFilterButton_clicked()
+void MainWindow::editFilter()
 {
 	if(!m_ui->filtersTree->currentItem())
 		return;
 
 	FilterDialog dlg(this, m_ui->filtersTree->currentItem()->text(1));
-	dlg.exec();
-
-	//TODO reload filters
+	if(dlg.exec())
+		reloadFilters();
 }
 
 void MainWindow::on_filtersTree_itemDoubleClicked(QTreeWidgetItem *item)
@@ -340,5 +341,38 @@ void MainWindow::on_filtersTree_itemDoubleClicked(QTreeWidgetItem *item)
 	if(!item)
 		return;
 
-	on_editFilterButton_clicked();
+	editFilter();
+}
+
+void MainWindow::readSettings()
+{
+	QSettings set;
+	restoreGeometry(set.value("geometry").toByteArray());
+	restoreState(set.value("state").toByteArray());
+	m_ui->statsTree->header()->restoreState(set.value("columns").toByteArray());
+	m_ui->statsTable->horizontalHeader()->restoreState(set.value("columns").toByteArray());
+
+}
+
+void MainWindow::writeSettings()
+{
+	QSettings set;
+	set.setValue("geometry", saveGeometry());
+	set.setValue("state", saveState());
+	set.setValue("columns", m_ui->statsTree->header()->saveState());
+}
+
+void MainWindow::deleteFilter()
+{
+	if(!m_ui->filtersTree->currentItem())
+		return;
+
+	const QFileInfo fileInfo(m_ui->filtersTree->currentItem()->text(1));
+	const Filter filter(fileInfo.absoluteFilePath());
+
+	if(QMessageBox::question(this, tr("Are you sure?"), tr("Do you want to delete filter \"%1\"?").arg(filter.name()), QMessageBox::Yes, QMessageBox::No) != QMessageBox::Yes)
+		return;
+
+	QFile::remove(fileInfo.absoluteFilePath());
+	reloadFilters();
 }

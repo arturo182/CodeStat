@@ -433,5 +433,178 @@
  <resources>
   <include location="../res.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>addDirButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>addDir()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>141</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>31</x>
+     <y>3</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>removeDirButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>removeDir()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>242</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>newFilterButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>newFilter()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>58</x>
+     <y>274</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>40</x>
+     <y>168</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editFilterButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>editFilter()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>281</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>97</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deleteFilterButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>deleteFilter()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>170</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exportSaveButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveExport()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>238</x>
+     <y>372</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>303</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>startButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>start()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>175</x>
+     <y>444</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>275</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dirsTree</sender>
+   <signal>currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateDirButtons(QTreeWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>46</x>
+     <y>68</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>64</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filtersTree</sender>
+   <signal>currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateFiltersButtons(QTreeWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>47</x>
+     <y>229</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>statsTree</sender>
+   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openFile(QTreeWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>338</x>
+     <y>44</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>361</x>
+     <y>3</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>updateDirButtons(QTreeWidgetItem*)</slot>
+  <slot>openFile(QTreeWidgetItem*)</slot>
+  <slot>updateFiltersButtons(QTreeWidgetItem*)</slot>
+  <slot>addDir()</slot>
+  <slot>removeDir()</slot>
+  <slot>start()</slot>
+  <slot>saveExport()</slot>
+  <slot>newFilter()</slot>
+  <slot>editFilter()</slot>
+  <slot>deleteFilter()</slot>
+ </slots>
 </ui>

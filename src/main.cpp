@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
 	//cheat to get portable settings
 	QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, qApp->applicationDirPath());
-	QApplication::setOrganizationName("data");
+	QApplication::setOrganizationName("xxx/../");
 	QApplication::setApplicationName("settings");
 
 	MainWindow wnd;
