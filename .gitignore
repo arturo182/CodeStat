@@ -1,9 +1,10 @@
 
-/Makefile*
-/LineCounter.pro.user
-/src/Makefile*
-/src/ui_*
+*.pro.user
+Makefile*
+ui_*
+*.exe
 /src/debug/*
 /src/release/*
-/bin/*.exe
-/bin/data/settings.ini
+/bin/settings.ini
+/src/*.Debug
+/src/*.Release
