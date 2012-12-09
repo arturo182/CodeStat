@@ -1,0 +1,9 @@
+{
+    "comments": "^\\s*?#.*?$",
+    "excludes": [
+    ],
+    "includes": [
+        "*.rb"
+    ],
+    "name": "Ruby"
+}
