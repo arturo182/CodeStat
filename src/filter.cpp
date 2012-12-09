@@ -16,7 +16,7 @@ Filter::Filter(const QString &fileName):
 
 		const QJsonObject rootObj = doc.object();
 		m_name = rootObj.value("name").toString();
-		m_comments = QRegExp(rootObj.value("comments").toString());
+		m_comments = QRegularExpression(rootObj.value("comments").toString(), QRegularExpression::CaseInsensitiveOption | QRegularExpression::DotMatchesEverythingOption | QRegularExpression::MultilineOption);
 		m_includes = rootObj.value("includes").toVariant().toStringList();
 		m_excludes = rootObj.value("excludes").toVariant().toStringList();
 	}

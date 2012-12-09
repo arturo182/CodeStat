@@ -8,6 +8,7 @@
 
 #include <QFileIconProvider>
 #include <QDesktopServices>
+#include <QProgressDialog>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -82,18 +83,18 @@ QStringList MainWindow::fileList(const QString &fileDir, const QStringList &filt
 {
 	QStringList files;
 
-	QDir dir(fileDir);
+	const QDir dir(fileDir);
 	foreach(const QFileInfo &fileInfo, dir.entryInfoList(filters, QDir::Files)) {
-		bool canAdd = true;
+		bool isExcluded = false;
 
 		foreach(const QString &exclude, excludes) {
 			if(fileInfo.absoluteFilePath().contains(QRegExp(exclude, Qt::CaseInsensitive, QRegExp::Wildcard))) {
-				canAdd = false;
+				isExcluded = true;
 				break;
 			}
 		}
 
-		if(!canAdd)
+		if(isExcluded)
 			continue;
 
 		files << fileInfo.absoluteFilePath();
@@ -101,8 +102,10 @@ QStringList MainWindow::fileList(const QString &fileDir, const QStringList &filt
 
 	if(m_ui->subdirsCheckBox->isChecked()) {
 		const QFileInfoList subdirs = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-		foreach(const QFileInfo &subdir, subdirs)
+		foreach(const QFileInfo &subdir, subdirs) {
 			files << fileList(subdir.absoluteFilePath(), filters, excludes);
+			qApp->processEvents();
+		}
 	}
 
 	return files;
@@ -143,95 +146,113 @@ void MainWindow::addDir()
 		set.setValue("lastdir", dir);
 	}
 
-	m_ui->startButton->setEnabled(m_ui->dirsTree->topLevelItemCount() > 0);
+	updateStartButton();
 }
 
 void MainWindow::start()
 {
 	QStringList includes;
 	QStringList excludes;
-	QList<QRegExp> comments;
+	QList<QRegularExpression> comments;
 
 	m_ui->statsTree->clear();
-	m_ui->progressBar->show();
-	m_ui->progressBar->setMinimum(0);
-	m_ui->progressBar->setMaximum(0);
 
 	for(int i = 0; i < m_ui->filtersTree->topLevelItemCount(); i++) {
 		QTreeWidgetItem *item = m_ui->filtersTree->topLevelItem(i);
-		if(item->checkState(0) == Qt::Checked) {
-			const Filter filter(item->text(1));
+		if(item->checkState(0) != Qt::Checked)
+			continue;
 
-			includes.append(filter.includes());
-			excludes.append(filter.excludes());
-			comments.append(filter.comments());
-		}
+		const Filter filter(item->text(1));
+
+		includes << filter.includes();
+		excludes << filter.excludes();
+		comments << filter.comments();
 	}
 
 	includes.removeDuplicates();
 	excludes.removeDuplicates();
 
+	QProgressDialog progressDlg(this);
+	progressDlg.setWindowTitle(tr("Building file list"));
+	progressDlg.setMaximum(0);
+	progressDlg.show();
+
 	QStringList files;
 	for(int i = 0; i < m_ui->dirsTree->topLevelItemCount(); i++) {
 		const QTreeWidgetItem *item = m_ui->dirsTree->topLevelItem(i);
-		files << fileList(item->text(0), includes, excludes);
-	}
 
+		progressDlg.setLabelText(tr("Listing files in \"%1\".").arg(item->text(0)));
+		files << fileList(item->text(0), includes, excludes);
+
+		if(progressDlg.wasCanceled())
+			return;
+	}
 	files.removeDuplicates();
 
-	const QFileIconProvider iconProv;
+	progressDlg.close();
+
+	if(!files.size())
+		return;
+
+	m_ui->progressBar->show();
+	m_ui->progressBar->setMinimum(0);
+	m_ui->progressBar->setMaximum(files.count() - 1);
+
+	const QFileIconProvider iconProvider;
 	int totalFileSize = 0;
 	int totalLineCount = 0;
 	int totalEmptyLineCount = 0;
 	int totalCommentLineCount = 0;
 
-	m_ui->progressBar->setMaximum(m_ui->progressBar->maximum() + files.count() - 1);
-	foreach(QString file, files) {
-		QFile text(file);
-		if(text.open(QIODevice::ReadOnly)) {
+	foreach(const QString &fileName, files) {
+		QFile file(fileName);
+		if(file.open(QIODevice::ReadOnly)) {
 			int lineCount = 0;
 			int emptyLineCount = 0;
 			int commentLineCount = 0;
 
-			QTextStream stream(&text);
+			QTextStream stream(&file);
 			QString line;
 			while(!stream.atEnd()) {
 				line = stream.readLine();
-				lineCount++;
+				++lineCount;
 
-				if(line.trimmed().isEmpty()) {
-					emptyLineCount++;
-				}
+				if(line.trimmed().isEmpty())
+					++emptyLineCount;
+			}
+			file.seek(0);
 
-				foreach(const QRegExp &regexp, comments) {
-					if(regexp.exactMatch(line)) {
-						commentLineCount++;
-						break;
-					}
+			const QString content = file.readAll();
+			foreach(const QRegularExpression &regexp, comments) {
+				QRegularExpressionMatchIterator matchIt = regexp.globalMatch(content);
+				while(matchIt.hasNext()) {
+					const QRegularExpressionMatch match = matchIt.next();
+					if(!match.hasMatch())
+						continue;
+
+					commentLineCount += match.captured(0).trimmed().toLatin1().count('\n') + 1;
 				}
 			}
 
-			const int fileSize = text.size();
+			const int fileSize = file.size();
 			totalFileSize += fileSize;
 			totalLineCount += lineCount;
 			totalEmptyLineCount += emptyLineCount;
 			totalCommentLineCount += commentLineCount;
 
-			TreeItem *item = new TreeItem();
-			item->setIcon(0, iconProv.icon(file));
-			item->setText(0, file);
+			TreeItem *item = new TreeItem(m_ui->statsTree);
+			item->setIcon(0, iconProvider.icon(fileName));
+			item->setText(0, fileName);
 
 			item->setText(1, calcFileSize(fileSize));
-			item->setData(1, Qt::UserRole, text.size());
+			item->setData(1, Qt::UserRole, file.size());
 
 			item->setText(2, QString::number(lineCount - (commentLineCount + emptyLineCount)));
 			item->setText(3, QString::number(commentLineCount));
 			item->setText(4, QString::number(emptyLineCount));
 			item->setText(5, QString::number(lineCount));
-
-			m_ui->statsTree->addTopLevelItem(item);
 		}
-		text.close();
+		file.close();
 
 		m_ui->progressBar->setValue(m_ui->progressBar->value() + 1);
 	}
@@ -266,6 +287,8 @@ void MainWindow::updateDirButtons(QTreeWidgetItem *current)
 void MainWindow::removeDir()
 {
 	delete m_ui->dirsTree->currentItem();
+
+	updateStartButton();
 }
 
 void MainWindow::openFile(QTreeWidgetItem *item)
@@ -342,6 +365,11 @@ void MainWindow::on_filtersTree_itemDoubleClicked(QTreeWidgetItem *item)
 		return;
 
 	editFilter();
+}
+
+void MainWindow::updateStartButton()
+{
+	m_ui->startButton->setEnabled(m_ui->dirsTree->topLevelItemCount() > 0);
 }
 
 void MainWindow::readSettings()

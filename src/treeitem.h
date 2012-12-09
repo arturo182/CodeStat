@@ -6,7 +6,8 @@
 class TreeItem: public QTreeWidgetItem
 {
 	public:
-		TreeItem()
+		TreeItem(QTreeWidget *tree) :
+			QTreeWidgetItem(tree)
 		{ }
 
 	private:

@@ -59,7 +59,7 @@ void FilterDialog::done(int result)
 
 	Filter filter(m_fileName);
 	filter.setName(m_ui->nameEdit->text());
-	filter.setComments(QRegExp(m_ui->commentsEdit->text()));
+	filter.setComments(QRegularExpression(m_ui->commentsEdit->text(), QRegularExpression::CaseInsensitiveOption | QRegularExpression::DotMatchesEverythingOption | QRegularExpression::MultilineOption));
 
 	QStringList includes;
 	for(int i = 0; i< m_ui->includeTree->topLevelItemCount(); ++i)

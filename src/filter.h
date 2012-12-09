@@ -1,6 +1,7 @@
 #ifndef FILTER_H
 #define FILTER_H
 
+#include <QRegularExpression>
 #include <QStringList>
 
 class Filter
@@ -22,13 +23,13 @@ class Filter
 		void setExcludes(const QStringList &excludes) { m_excludes = excludes; }
 		QStringList excludes() const { return m_excludes; }
 
-		void setComments(const QRegExp &comments) { m_comments = comments; }
-		QRegExp comments() const { return m_comments; }
+		void setComments(const QRegularExpression &comments) { m_comments = comments; }
+		QRegularExpression comments() const { return m_comments; }
 
 	private:
 		QStringList m_excludes;
 		QStringList m_includes;
-		QRegExp m_comments;
+		QRegularExpression m_comments;
 		QString m_fileName;
 		QString m_name;
 };

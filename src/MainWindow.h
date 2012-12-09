@@ -33,6 +33,7 @@ class MainWindow: public QMainWindow
 		void openFile(QTreeWidgetItem *item);
 		void updateFiltersButtons(QTreeWidgetItem *item);
 		void on_filtersTree_itemDoubleClicked(QTreeWidgetItem *item);
+		void updateStartButton();
 		void addDir();
 		void removeDir();
 		void start();
