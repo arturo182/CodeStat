@@ -1,8 +1,9 @@
 #include "export.h"
 
 #include <QTreeWidgetItem>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QApplication>
-#include <QDomDocument>
 #include <QDebug>
 #include <QDate>
 #include <QFile>
@@ -13,34 +14,18 @@ Export::Export(const QString &fileName):
 {
 	QFile file(qApp->applicationDirPath() + "/data/exports/" + fileName);
 	if(file.open(QIODevice::ReadOnly)) {
-		QDomDocument doc;
-		doc.setContent(&file);
+		QJsonParseError error;
+		QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &error);
+		file.close();
 
-		QDomElement root = doc.documentElement();
-		QDomNodeList nodes = root.childNodes();
-		for(int i = 0; i < nodes.count(); i++) {
-			QDomElement elem = nodes.at(i).toElement();
+		const QJsonObject rootObj = doc.object();
 
-			if(elem.nodeName() == "info") {
-				m_name = elem.attribute("name");
-				m_ext = elem.attribute("ext");
-			} else if(elem.nodeName() == "append") {
-				if(elem.childNodes().count() > 0) {
-					m_append = elem.firstChild().toCDATASection().nodeValue();
-				}
-			} else if(elem.nodeName() == "item") {
-				if(elem.childNodes().count() > 0) {
-					m_item = elem.firstChild().toCDATASection().nodeValue();
-				}
-			} else if(elem.nodeName() == "prepend") {
-				if(elem.childNodes().count() > 0) {
-					m_prepend = elem.firstChild().toCDATASection().nodeValue();
-				}
-			}
-		}
+		m_name = rootObj.value("name").toString();
+		m_ext = rootObj.value("extension").toString();
+		m_append = rootObj.value("append").toString();
+		m_item = rootObj.value("item").toString();
+		m_prepend = rootObj.value("prepend").toString();
 	}
-
-	file.close();
 }
 
 QString Export::createItem(const QTreeWidgetItem *item)

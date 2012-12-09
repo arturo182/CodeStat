@@ -6,21 +6,19 @@ DESTDIR    = ../bin
 TEMPLATE   = app
 
 SOURCES   += main.cpp\
-    filter.cpp \
-    filterdialog.cpp \
-    export.cpp \
-    mainwindow.cpp
+			 filter.cpp \
+			 filterdialog.cpp \
+			 export.cpp \
+			 mainwindow.cpp
 
-HEADERS   += \
-    filter.h \
-    treeitem.h \
-    filterdialog.h \
-    export.h \
-    mainwindow.h
+HEADERS   += filter.h \
+			 treeitem.h \
+			 filterdialog.h \
+			 export.h \
+			 mainwindow.h
 
-FORMS     += \
-    mainwindow.ui \
-    filterdialog.ui
+FORMS     += mainwindow.ui \
+			 filterdialog.ui
 
 RESOURCES += ../res.qrc
 

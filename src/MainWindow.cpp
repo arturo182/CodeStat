@@ -57,7 +57,7 @@ void MainWindow::loadFilters()
 	m_ui->filtersTree->clear();
 
 	QDir filters(qApp->applicationDirPath() + "/data/filters");
-	foreach(const QFileInfo &info, filters.entryInfoList(QStringList() << "*xml", QDir::Files, QDir::Name)) {
+	foreach(const QFileInfo &info, filters.entryInfoList(QStringList() << "*.json", QDir::Files, QDir::Name)) {
 		const Filter filter(info.fileName());
 
 		QTreeWidgetItem *item = new QTreeWidgetItem();
@@ -74,7 +74,7 @@ void MainWindow::loadExports()
 	m_ui->exportFormatCombo->clear();
 
 	QDir exports(qApp->applicationDirPath() + "/data/exports");
-	foreach(const QFileInfo &info, exports.entryInfoList(QStringList() << "*xml", QDir::Files, QDir::Name)) {
+	foreach(const QFileInfo &info, exports.entryInfoList(QStringList() << "*.json", QDir::Files, QDir::Name)) {
 		Export expo(info.fileName());
 
 		m_ui->exportFormatCombo->addItem(expo.name(), expo.fileName());

@@ -1,0 +1,7 @@
+{
+	"name": "CSV (Comma-separated values)",
+	"extension": "*.csv",
+	"prepend": "",
+	"item": "\"%FILENAME%\",%FILESIZEB%,%LINES_SOURCE%,%LINES_COMMENTS%,%LINES_EMPTY%,%LINES_TOTAL%",
+	"append": ""
+}

@@ -1,9 +1,0 @@
-<export>
-  <info name="CSV (Comma-separated values)" ext="*.csv" />
-  <prepend/>
-  <item>
-    <![CDATA["%FILENAME%",%FILESIZEB%,%LINES_SOURCE%,%LINES_COMMENTS%,%LINES_EMPTY%,%LINES_TOTAL%
-]]>
-  </item>
-  <append/>
-</export>

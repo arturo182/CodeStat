@@ -1,0 +1,6 @@
+{
+	"name": "PHP projects (PHP, HTML, JS, CSS)",
+	"includes": ["*.php*", "*.htm*", "*.js", "*.css"],
+	"excludes": [],
+	"comments": "(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*)"
+}
