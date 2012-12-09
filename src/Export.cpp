@@ -12,7 +12,7 @@
 Export::Export(const QString &fileName) :
 	m_fileName(fileName)
 {
-	QFile file(qApp->applicationDirPath() + "/exports/" + fileName);
+	QFile file(fileName);
 	if(file.open(QIODevice::ReadOnly)) {
 		QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
 		file.close();

@@ -1,6 +1,6 @@
 {
 	"name": "HTML table",
-	"extension": "*.html",
+	"extension": "HTML (*.html)",
 	"prepend": "<html>
 <head>
   <title>LineCounter stats export</title>

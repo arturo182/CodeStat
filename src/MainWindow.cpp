@@ -72,7 +72,7 @@ void MainWindow::loadExports()
 
 	QDir exports(qApp->applicationDirPath() + "/exports");
 	foreach(const QFileInfo &info, exports.entryInfoList(QStringList() << "*.json", QDir::Files, QDir::Name)) {
-		Export expo(info.fileName());
+		Export expo(info.absoluteFilePath());
 
 		m_ui->exportFormatCombo->addItem(expo.name(), expo.fileName());
 	}
@@ -282,7 +282,7 @@ void MainWindow::saveExport()
 		const int currentIndex = m_ui->exportFormatCombo->currentIndex();
 		Export expo(m_ui->exportFormatCombo->itemData(currentIndex).toString());
 
-		QString fileName = QFileDialog::getSaveFileName(this, tr("Export report"), QString(), expo.ext());
+		QString fileName = QFileDialog::getSaveFileName(this, tr("Export report"), QString(), expo.extension());
 		if(!fileName.isEmpty()) {
 			QStringList totalStats;
 			totalStats.append(m_ui->statsTable->item(0, 0)->data(Qt::UserRole).toString());

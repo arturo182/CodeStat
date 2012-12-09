@@ -16,7 +16,7 @@ class Export
 		QString append(const QStringList &totalStats);
 
 		QString name() const { return m_name; }
-		QString ext() const { return m_ext; }
+		QString extension() const { return m_ext; }
 		QString fileName() const { return m_fileName; }
 
 	private:

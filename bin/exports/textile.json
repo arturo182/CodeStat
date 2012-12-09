@@ -1,6 +1,6 @@
 {
 	"name": "Textile table",
-	"extension": "*.textile",
+	"extension": "Textile (*.textile)",
 	"prepend": "h1. LineCounter report
 ",
 	"item": "|%FILENAME%|%FILESIZE% (%FILESIZEB% bytes)|%LINES_SOURCE% (%PERCENT_SOURCE%)|%LINES_COMMENTS% (%PERCENT_COMMENTS%)|%LINES_EMPTY% (%PERCENT_EMPTY%)|%LINES_TOTAL%|
