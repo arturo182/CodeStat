@@ -1,25 +1,25 @@
-QT        += core gui widgets
+QT				+= core gui widgets
 
-TARGET     = LineCounter
-DESTDIR    = ../bin
+TARGET			 = CodeStat
+DESTDIR			 = ../bin
+TEMPLATE		 = app
+QMAKE_LFLAGS	+= -static-libgcc -static-libstdc++
 
-TEMPLATE   = app
+SOURCES			+= main.cpp\
+				   filter.cpp \
+				   filterdialog.cpp \
+				   export.cpp \
+				   mainwindow.cpp
 
-SOURCES   += main.cpp\
-			 filter.cpp \
-			 filterdialog.cpp \
-			 export.cpp \
-			 mainwindow.cpp
+HEADERS			+= filter.h \
+				   treeitem.h \
+				   filterdialog.h \
+				   export.h \
+				   mainwindow.h
 
-HEADERS   += filter.h \
-			 treeitem.h \
-			 filterdialog.h \
-			 export.h \
-			 mainwindow.h
+FORMS			+= mainwindow.ui \
+				   filterdialog.ui
 
-FORMS     += mainwindow.ui \
-			 filterdialog.ui
+RESOURCES		+= ../res.qrc
 
-RESOURCES += ../res.qrc
-
-RC_FILE    = ../res.rc
+RC_FILE			 = ../res.rc
