@@ -100,14 +100,12 @@
            <property name="indentation">
             <number>0</number>
            </property>
+           <property name="columnCount">
+            <number>1</number>
+           </property>
            <attribute name="headerVisible">
             <bool>false</bool>
            </attribute>
-           <column>
-            <property name="text">
-             <string/>
-            </property>
-           </column>
            <column>
             <property name="text">
              <string/>
