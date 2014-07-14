@@ -199,17 +199,17 @@ void MainWindow::start()
 	m_ui->progressBar->setMaximum(files.count() - 1);
 
 	const QFileIconProvider iconProvider;
-	int totalFileSize = 0;
-	int totalLineCount = 0;
-	int totalEmptyLineCount = 0;
-	int totalCommentLineCount = 0;
+	qint64 totalFileSize = 0;
+	qint64 totalLineCount = 0;
+	qint64 totalEmptyLineCount = 0;
+	qint64 totalCommentLineCount = 0;
 
 	foreach(const QString &fileName, files) {
 		QFile file(fileName);
 		if(file.open(QIODevice::ReadOnly)) {
-			int lineCount = 0;
-			int emptyLineCount = 0;
-			int commentLineCount = 0;
+			qint64 lineCount = 0;
+			qint64 emptyLineCount = 0;
+			qint64 commentLineCount = 0;
 
 			QTextStream stream(&file);
 			QString line;
@@ -234,7 +234,7 @@ void MainWindow::start()
 				}
 			}
 
-			const int fileSize = file.size();
+			const qint64 fileSize = file.size();
 			totalFileSize += fileSize;
 			totalLineCount += lineCount;
 			totalEmptyLineCount += emptyLineCount;
