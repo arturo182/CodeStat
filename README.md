@@ -37,9 +37,10 @@ If you want to export a report created by CodeStat you have to choose one of the
 
 When the stats are exported to a file first the *prepend* text is inserted, after that the *item* text is inserted <u>for every file</u> and lastly the *append* text is inserted.
 
-###There are some variables that can be used in export blocks
+There are some variables that can be used in export blocks
+---
 
-####For the *item* block
+#### For the *item* block
 
 * *%FILENAME%*
 * *%FILESIZE%*
@@ -52,7 +53,7 @@ When the stats are exported to a file first the *prepend* text is inserted, afte
 * *%PERCENT_COMMENTS%*
 * *%PERCENT_EMPTY%*
 
-####For *prepend* and *append* blocks
+#### For *prepend* and *append* blocks
 
 * *%TOTAL_FILECOUNT%*
 * *%TOTAL_FILESIZE%*
